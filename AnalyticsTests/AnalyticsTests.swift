@@ -41,6 +41,7 @@ class AnalyticsTests: QuickSpec {
 
     it("initialized correctly") {
       expect(analytics.configuration.flushAt) == 20
+      expect(analytics.configuration.flushInterval) == 30
       expect(analytics.configuration.writeKey) == "QUI5ydwIGeFFTa1IvCBUhxL9PyW5B0jE"
       expect(analytics.configuration.shouldUseLocationServices) == false
       expect(analytics.configuration.enableAdvertisingTracking) == true
@@ -143,6 +144,28 @@ class AnalyticsTests: QuickSpec {
       expect(event?.event) == "Deep Link Opened"
       expect(event?.properties?["url"] as? String) == "myapp://auth?token=((redacted/my-auth))&other=stuff"
     }
-  }
+    
+    it("flushes using flushTimer") {
+      let integration = analytics.test_integrationsManager()?.test_segmentIntegration()
 
+      analytics.track("test")
+
+      expect(integration?.test_flushTimer()).toEventuallyNot(beNil())
+      expect(integration?.test_batchRequest()).to(beNil())
+
+      integration?.test_flushTimer()?.fire()
+      
+      expect(integration?.test_batchRequest()).toEventuallyNot(beNil())
+    }
+
+    it("respects flushInterval") {
+      let timer = analytics
+        .test_integrationsManager()?
+        .test_segmentIntegration()?
+        .test_flushTimer()
+      
+      expect(timer).toNot(beNil())
+      expect(timer?.timeInterval) == config.flushInterval
+    }
+  }
 }
