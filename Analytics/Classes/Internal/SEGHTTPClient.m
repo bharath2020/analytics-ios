@@ -20,7 +20,7 @@
 }
 
 
-- (instancetype)initWithRequestFactory:(SEGRequestFactory)requestFactory
+- (instancetype)initWithRequestFactory:(SEGRequestFactory)requestFactory sessionConfigFactory:(SEGSessionConfigFactory)sessionConfigFactory
 {
     if (self = [self init]) {
         if (requestFactory == nil) {
@@ -28,6 +28,7 @@
         } else {
             self.requestFactory = requestFactory;
         }
+        self.sessionConfigFactory = sessionConfigFactory;
         _sessionsByWriteKey = [NSMutableDictionary dictionary];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
         config.HTTPAdditionalHeaders = @{ @"Accept-Encoding" : @"gzip" };
@@ -40,13 +41,18 @@
 {
     NSURLSession *session = self.sessionsByWriteKey[writeKey];
     if (!session) {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.HTTPAdditionalHeaders = @{
-            @"Accept-Encoding" : @"gzip",
-            @"Content-Encoding" : @"gzip",
-            @"Content-Type" : @"application/json",
-            @"Authorization" : [@"Basic " stringByAppendingString:[[self class] authorizationHeader:writeKey]],
-        };
+        NSURLSessionConfiguration *config;
+        if (self.sessionConfigFactory != nil) {
+            config = self.sessionConfigFactory(writeKey);
+        } else {
+            config = [NSURLSessionConfiguration defaultSessionConfiguration];
+            config.HTTPAdditionalHeaders = @{
+                                             @"Accept-Encoding" : @"gzip",
+                                             @"Content-Encoding" : @"gzip",
+                                             @"Content-Type" : @"application/json",
+                                             @"Authorization" : [@"Basic " stringByAppendingString:[[self class] authorizationHeader:writeKey]],
+                                             };
+        }
         session = [NSURLSession sessionWithConfiguration:config];
         self.sessionsByWriteKey[writeKey] = session;
     }
