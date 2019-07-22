@@ -16,13 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SEGHTTPClient : NSObject
 
 @property (nonatomic, strong) SEGRequestFactory requestFactory;
+@property (nonatomic, strong) SEGSessionConfigFactory configFactory;
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSURLSession *> *sessionsByWriteKey;
 @property (nonatomic, readonly) NSURLSession *genericSession;
 
 + (SEGRequestFactory)defaultRequestFactory;
 + (NSString *)authorizationHeader:(NSString *)writeKey;
 
-- (instancetype)initWithRequestFactory:(SEGRequestFactory _Nullable)requestFactory;
+- (instancetype)initWithRequestFactory:(SEGRequestFactory)requestFactory configFactory:(SEGSessionConfigFactory)configFactory;
 
 /**
  * Upload dictionary formatted as per https://segment.com/docs/sources/server/http/#batch.

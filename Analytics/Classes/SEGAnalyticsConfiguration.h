@@ -20,6 +20,7 @@
 @end
 
 typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
+typedef NSURLSessionConfiguration *_Nullable (^SEGSessionConfigFactory)(NSString *_Nonnull);
 
 @protocol SEGIntegrationFactory;
 @protocol SEGCrypto;
@@ -114,6 +115,11 @@ typedef NSMutableURLRequest *_Nonnull (^SEGRequestFactory)(NSURL *_Nonnull);
  * Set a custom request factory.
  */
 @property (nonatomic, strong, nullable) SEGRequestFactory requestFactory;
+
+/**
+ * Set a custom request session config factory
+ */
+@property (nonatomic, strong, nullable) SEGSessionConfigFactory configFactory;
 
 /**
  * Set a custom crypto
