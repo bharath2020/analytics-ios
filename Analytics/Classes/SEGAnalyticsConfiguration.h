@@ -119,7 +119,7 @@ typedef NSURLSessionConfiguration *_Nullable (^SEGSessionConfigFactory)(NSString
 /**
  * Set a custom request session config factory
  */
-@property (nonatomic, strong, nullable) SEGSessionConfigFactory configFactory;
+@property (nonatomic, strong, nullable) SEGSessionConfigFactory sessionConfigFactory;
 
 /**
  * Set a custom crypto

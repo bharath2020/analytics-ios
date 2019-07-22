@@ -20,7 +20,7 @@
 }
 
 
-- (instancetype)initWithRequestFactory:(SEGRequestFactory)requestFactory configFactory:(SEGSessionConfigFactory)configFactory
+- (instancetype)initWithRequestFactory:(SEGRequestFactory)requestFactory sessionConfigFactory:(SEGSessionConfigFactory)sessionConfigFactory
 {
     if (self = [self init]) {
         if (requestFactory == nil) {
@@ -28,7 +28,7 @@
         } else {
             self.requestFactory = requestFactory;
         }
-        self.configFactory = configFactory;
+        self.sessionConfigFactory = sessionConfigFactory;
         _sessionsByWriteKey = [NSMutableDictionary dictionary];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
         config.HTTPAdditionalHeaders = @{ @"Accept-Encoding" : @"gzip" };
@@ -42,8 +42,8 @@
     NSURLSession *session = self.sessionsByWriteKey[writeKey];
     if (!session) {
         NSURLSessionConfiguration *config;
-        if (self.configFactory != nil) {
-            config = self.configFactory(writeKey);
+        if (self.sessionConfigFactory != nil) {
+            config = self.sessionConfigFactory(writeKey);
         } else {
             config = [NSURLSessionConfiguration defaultSessionConfiguration];
             config.HTTPAdditionalHeaders = @{
